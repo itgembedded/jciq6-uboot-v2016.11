@@ -1,0 +1,12 @@
+if TARGET_JCIQ6
+
+config SYS_BOARD
+	default "jciq6"
+
+config SYS_VENDOR
+	default "jci"
+
+config SYS_CONFIG_NAME
+	default "jciq6"
+
+endif

@@ -84,6 +84,12 @@ config TARGET_GW_VENTANA
 	bool "gw_ventana"
 	select SUPPORT_SPL
 
+config TARGET_JCIQ6
+	bool "jciq6"
+	select SUPPORT_SPL
+	select DM
+	select DM_THERMAL
+
 config TARGET_KOSAGI_NOVENA
 	bool "Kosagi Novena"
 	select SUPPORT_SPL
@@ -244,6 +250,7 @@ source "board/freescale/mx6sxsabresd/Kconfig"
 source "board/freescale/mx6sxsabreauto/Kconfig"
 source "board/freescale/mx6ul_14x14_evk/Kconfig"
 source "board/freescale/mx6ullevk/Kconfig"
+source "board/jci/jciq6/Kconfig"
 source "board/phytec/pcm058/Kconfig"
 source "board/gateworks/gw_ventana/Kconfig"
 source "board/kosagi/novena/Kconfig"

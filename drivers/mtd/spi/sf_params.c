@@ -111,6 +111,8 @@ const struct spi_flash_params spi_flash_params_table[] = {
 	{"SST25WF040",	   0xbf2504, 0x0,	64 * 1024,     8, SECT_4K | SST_WR},
 	{"SST25WF040B",	   0x621613, 0x0,	64 * 1024,     8, SECT_4K},
 	{"SST25WF080",	   0xbf2505, 0x0,	64 * 1024,    16, SECT_4K | SST_WR},
+	{"SST26VF032B",	   0xbf2642, 0x0,       64 * 1024,    64, SECT_4K},
+	{"SST26VF064B",	   0xbf2643, 0x0,       64 * 1024,   128, SECT_4K},
 #endif
 #ifdef CONFIG_SPI_FLASH_WINBOND		/* WINBOND */
 	{"W25P80",	   0xef2014, 0x0,	64 * 1024,    16, 0},
