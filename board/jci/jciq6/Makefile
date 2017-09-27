@@ -6,4 +6,5 @@
 
 obj-y  := jciq6.o
 obj-y  += cmd_j20.o
+obj-y  += cmd_qplus.o
 

@@ -96,11 +96,14 @@
 
 
 /* Env settings */
-#define CONFIG_ENV_DEFAULT_UBT_FILE	"u-boot.imx"
-#define CONFIG_ENV_DEFAULT_IMG_FILE	"zImage"
-#define CONFIG_ENV_DEFAULT_FDT_FILE	"imx6q-jciq6.dtb"
-#define CONFIG_ENV_DEFAULT_FDT_FILE_640	"imx6q-jciq6-640.dtb"
-#define CONFIG_ENV_DEFAULT_SCR_FILE	"boot-jciq6.scr"
+/* If adding new CONFIG options/vars, add them to /git/scripts/cnofig_whitelist.txt for validity tests */
+#define CONFIG_ENV_DEFAULT_UBT_FILE		"u-boot.imx"
+#define CONFIG_ENV_DEFAULT_IMG_FILE		"zImage"
+#define CONFIG_ENV_DEFAULT_FDT_FILE		"imx6q-jciq6.dtb"
+#define CONFIG_ENV_DEFAULT_FDT_FILE_640		"imx6q-jciq6-640.dtb"
+#define CONFIG_ENV_DEFAULT_FDT_FILE_QP		"imx6qp-jciq6.dtb"
+#define CONFIG_ENV_DEFAULT_FDT_FILE_QP_640	"imx6qp-jciq6-640.dtb"
+#define CONFIG_ENV_DEFAULT_SCR_FILE		"boot-jciq6.scr"
 
 #define CONFIG_ENV_DEFAULT_ETH_ADDR         "00:0D:15:00:D1:75"
 #define CONFIG_ENV_DEFAULT_CLIENT_IP        "192.168.0.150"
@@ -268,10 +271,10 @@
 			"else " \
 				"if run loadimage; then " \
 					"run mmcboot; " \
-				"else run netboot; " \
+				"else run bootsata; " \
 				"fi; " \
 			"fi; " \
-		"else run netboot; fi;\0" \
+		"else run bootsata; fi;\0" \
 	"bootsata=echo Booting from SATA ...; " \
 		"run check_j20; " \
 		VIDEO_ARGS_SCRIPT \
@@ -332,14 +335,21 @@
 			"fi; " \
 		"fi; " \
 		"if test -z \"$fdt_file\"; then " \
-			"setenv fdt_file " CONFIG_ENV_DEFAULT_FDT_FILE "; " \
 			"if j20 640; then " \
-				"setenv fdt_file " CONFIG_ENV_DEFAULT_FDT_FILE_640 "; " \
+				"if qplus; then " \
+					"setenv fdt_file " CONFIG_ENV_DEFAULT_FDT_FILE_QP_640 "; " \
+				"else " \
+					"setenv fdt_file " CONFIG_ENV_DEFAULT_FDT_FILE_640 "; " \
+				"fi; " \
+			"else " \
+				"if qplus; then " \
+					"setenv fdt_file " CONFIG_ENV_DEFAULT_FDT_FILE_QP "; " \
+				"else " \
+					"setenv fdt_file " CONFIG_ENV_DEFAULT_FDT_FILE "; " \
+				"fi; " \
 			"fi; " \
 		"fi;\0 " \
 		
-
-
 
 #define CONFIG_BOOTCOMMAND \
 	"run bootmmc;"
