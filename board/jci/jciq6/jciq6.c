@@ -155,6 +155,7 @@ static iomux_v3_cfg_t const ecspi1_pads[] = {
 	MX6_PAD_EIM_EB2__GPIO2_IO30 | MUX_PAD_CTRL(NO_PAD_CTRL),
 };
 
+/* not currently used with LCD commented out
 static iomux_v3_cfg_t const rgb_pads[] = {
 	MX6_PAD_DI0_DISP_CLK__IPU1_DI0_DISP_CLK | MUX_PAD_CTRL(NO_PAD_CTRL),
 	MX6_PAD_DI0_PIN15__IPU1_DI0_PIN15 | MUX_PAD_CTRL(NO_PAD_CTRL),
@@ -188,7 +189,6 @@ static iomux_v3_cfg_t const rgb_pads[] = {
 	MX6_PAD_SD1_DAT3__GPIO1_IO21 | MUX_PAD_CTRL(NO_PAD_CTRL),
 };
 
-/* not currently used with LCD commented out
 static void enable_backlight(void)
 {
 	imx_iomux_v3_setup_multiple_pads(bl_pads, ARRAY_SIZE(bl_pads));
