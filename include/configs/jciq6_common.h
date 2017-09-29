@@ -349,8 +349,26 @@
 				"fi; " \
 			"fi; " \
 		"fi;\0 " \
-		
+	"program_spi=" \
+		"if mmc dev ${mmcdev}; then "	\
+			"if sf probe 0:0; then " \
+				"mmc read 10800000 0 400; " \
+				"sf erase 0 80000; " \
+				"sf write 10800000 0 80000; " \
+				"sf read 10900000 0 80000; " \
+				"if cmp.b 10800000 10900000 80000; then " \
+					"echo SPI Programming complete; " \
+				"else " \
+					"echo ERROR: SPI Verification Failed; " \
+				"fi; " \
+			"else " \
+				"echo No SPI found to program; " \
+			"fi; " \
+		"else " \
+			"echo SD Card must be inserted to Program SPI; " \
+		"fi;\0 " \
 
+		
 #define CONFIG_BOOTCOMMAND \
 	"run bootmmc;"
 
