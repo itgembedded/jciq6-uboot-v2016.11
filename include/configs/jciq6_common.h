@@ -350,8 +350,9 @@
 			"fi; " \
 		"fi;\0 " \
 	"program_spi=" \
-		"if mmc dev ${mmcdev}; then "	\
-			"if sf probe 0:0; then " \
+		"if sf probe 0:0; then " \
+			"if mmc dev ${mmcdev}; then "	\
+				"echo UBOOT being loaded from SD Card; " \
 				"mmc read 10800000 0 400; " \
 				"sf erase 0 80000; " \
 				"sf write 10800000 0 80000; " \
@@ -362,10 +363,23 @@
 					"echo ERROR: SPI Verification Failed; " \
 				"fi; " \
 			"else " \
-				"echo No SPI found to program; " \
+				"if sata dev ${satadev}; then "	\
+					"echo UBOOT being loaded from CFAST Card; " \
+					"sata read 10800000 0 400; " \
+					"sf erase 0 80000; " \
+					"sf write 10800000 0 80000; " \
+					"sf read 10900000 0 80000; " \
+					"if cmp.b 10800000 10900000 80000; then " \
+						"echo SPI Programming complete; " \
+					"else " \
+						"echo ERROR: SPI Verification Failed; " \
+					"fi; " \
+				"else " \
+					"echo SD or CFAST Card must be inserted to Program SPI; " \
+				"fi; " \
 			"fi; " \
 		"else " \
-			"echo SD Card must be inserted to Program SPI; " \
+			"echo No SPI found to program; " \
 		"fi;\0 " \
 
 		
@@ -374,9 +388,10 @@
 
 #define CONFIG_ARP_TIMEOUT     200UL
 
+#define CONFIG_SYS_ALT_MEMTEST
 #define CONFIG_SYS_MEMTEST_START       0x10000000
-#define CONFIG_SYS_MEMTEST_END         0x10010000
-#define CONFIG_SYS_MEMTEST_SCRATCH     0x10800000
+#define CONFIG_SYS_MEMTEST_END         0x17000000
+#define CONFIG_SYS_MEMTEST_SCRATCH     0x17100000
 
 #define CONFIG_STACKSIZE               (128 * 1024)
 

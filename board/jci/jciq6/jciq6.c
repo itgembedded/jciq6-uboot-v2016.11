@@ -61,6 +61,8 @@ DECLARE_GLOBAL_DATA_PTR;
 	PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm | PAD_CTL_HYS |	\
 	PAD_CTL_ODE | PAD_CTL_SRE_FAST)
 
+#define LED_PAD_CTRL (PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm | PAD_CTL_HYS)
+
 //#define I2C_PMIC	1
 
 #define I2C_PAD MUX_PAD_CTRL(I2C_PAD_CTRL)
@@ -107,6 +109,55 @@ static void setup_iomux_enet(void)
 	udelay(500);
 	gpio_set_value(IMX_GPIO_NR(1, 25), 1);
 }
+
+static iomux_v3_cfg_t const led_pads[] = {
+	MX6_PAD_SD4_DAT1__GPIO2_IO09	| MUX_PAD_CTRL(LED_PAD_CTRL),	// Sys Active LED
+	MX6_PAD_SD1_DAT0__GPIO1_IO16	| MUX_PAD_CTRL(LED_PAD_CTRL),	// User LED1
+	MX6_PAD_SD1_CMD__GPIO1_IO18	| MUX_PAD_CTRL(LED_PAD_CTRL),	// User LED2
+	MX6_PAD_CSI0_DAT7__GPIO5_IO25	| MUX_PAD_CTRL(LED_PAD_CTRL),	// Touchscreen LED
+	MX6_PAD_GPIO_6__GPIO1_IO06	| MUX_PAD_CTRL(LED_PAD_CTRL),	// SD Active LED
+};
+
+static void setup_iomux_led(void)
+{
+	imx_iomux_v3_setup_multiple_pads(led_pads, ARRAY_SIZE(led_pads));
+
+	/* All LEDs default to OFF (0) */
+	gpio_direction_output(IMX_GPIO_NR(2, 9) , 0);
+	gpio_direction_output(IMX_GPIO_NR(1, 16) , 0);
+	gpio_direction_output(IMX_GPIO_NR(1, 18) , 0);
+	gpio_direction_output(IMX_GPIO_NR(5, 25) , 0);
+	gpio_direction_output(IMX_GPIO_NR(1, 6) , 0);
+}
+
+static iomux_v3_cfg_t const uart_ctrl_pads[] = {
+	MX6_PAD_DISP0_DAT11__GPIO5_IO05	| MUX_PAD_CTRL(LED_PAD_CTRL),	// UART2 DE
+	MX6_PAD_DISP0_DAT6__GPIO4_IO27	| MUX_PAD_CTRL(LED_PAD_CTRL),	// UART2 REn
+	MX6_PAD_DISP0_DAT14__GPIO5_IO08	| MUX_PAD_CTRL(LED_PAD_CTRL),	// UART3 DE
+	MX6_PAD_DISP0_DAT19__GPIO5_IO13	| MUX_PAD_CTRL(LED_PAD_CTRL),	// UART3 REn
+	MX6_PAD_DISP0_DAT18__GPIO5_IO12	| MUX_PAD_CTRL(LED_PAD_CTRL),	// UART4 DE
+	MX6_PAD_DISP0_DAT17__GPIO5_IO11	| MUX_PAD_CTRL(LED_PAD_CTRL),	// UART4 REn
+	MX6_PAD_DISP0_DAT15__GPIO5_IO09	| MUX_PAD_CTRL(LED_PAD_CTRL),	// UART5 DE
+	MX6_PAD_DISP0_DAT20__GPIO5_IO14	| MUX_PAD_CTRL(LED_PAD_CTRL),	// UART5 REn
+};
+
+static void setup_iomux_uart_ctrl(void)
+{
+	imx_iomux_v3_setup_multiple_pads(uart_ctrl_pads, ARRAY_SIZE(uart_ctrl_pads));
+
+	/* Default UART? DE to 0 (disabled) */
+	gpio_direction_output(IMX_GPIO_NR(5, 5) , 0);
+	gpio_direction_output(IMX_GPIO_NR(5, 8) , 0);
+	gpio_direction_output(IMX_GPIO_NR(5, 12) , 0);
+	gpio_direction_output(IMX_GPIO_NR(5, 9) , 0);
+
+	/* Default UART? REn to 0 (enabled) */
+	gpio_direction_output(IMX_GPIO_NR(4, 27) , 0);
+	gpio_direction_output(IMX_GPIO_NR(5, 13) , 0);
+	gpio_direction_output(IMX_GPIO_NR(5, 11) , 0);
+	gpio_direction_output(IMX_GPIO_NR(5, 14) , 0);
+}
+
 
 static iomux_v3_cfg_t const usdhc2_pads[] = {
 	MX6_PAD_SD2_CLK__SD2_CLK	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
@@ -677,6 +728,8 @@ int board_ehci_power(int port, int on)
 
 int board_early_init_f(void)
 {
+	setup_iomux_led();
+	setup_iomux_uart_ctrl();
 	setup_iomux_uart();
 #if defined(CONFIG_VIDEO_IPUV3)
 //	setup_display();
