@@ -246,36 +246,36 @@
 	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
 	"sataloadimage=fatload sata ${satadev}:${satapart} ${loadaddr} ${image}\0" \
 	"sataloadfdt=fatload sata ${satadev}:${satapart} ${fdt_addr} ${fdt_file}\0" \
-	"mmcboot=" \
+	"mmcboot=echo Booting from SD ...; " \
 		"run check_j20; " \
 		VIDEO_ARGS_SCRIPT \
 		"run mmcargs; " \
-		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
-			"if run loadfdt; then " \
-				"bootz ${loadaddr} - ${fdt_addr}; " \
-			"else " \
-				"if test ${boot_fdt} = try; then " \
-					"bootz; " \
-				"else " \
-					"echo WARN: Cannot load the DT; " \
-				"fi; " \
-			"fi; " \
-		"else " \
-			"bootz; " \
-		"fi;\0" \
-	"bootmmc=echo Booting from MMC ...; " \
 		"mmc dev ${mmcdev};" \
 		"if mmc rescan; then " \
 			"if run loadbootscript; then " \
 				"run bootscript; " \
 			"else " \
-				"if run loadimage; then " \
-					"run mmcboot; " \
-				"else run bootsata; " \
+				"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
+					"if run loadimage; then " \
+						"if run loadfdt; then " \
+							"bootz ${loadaddr} - ${fdt_addr}; " \
+						"else " \
+							"if test ${boot_fdt} = try; then " \
+								"bootz; " \
+							"else " \
+								"echo WARN: Cannot load the DT; " \
+							"fi; " \
+						"fi; " \
+					"else echo WARN: Cannot load the image; " \
+					"fi; " \
+				"else " \
+					"bootz; " \
 				"fi; " \
 			"fi; " \
-		"else run bootsata; fi;\0" \
-	"bootsata=echo Booting from SATA ...; " \
+		"else echo WARN: No SD Card installed; " \
+		"fi;\0" \
+	"bootmmc=run mmcboot;\0" \
+	"sataboot=echo Booting from SATA ...; " \
 		"run check_j20; " \
 		VIDEO_ARGS_SCRIPT \
 		"run sataargs; " \
@@ -296,7 +296,21 @@
 			"else " \
 				"bootz; " \
 			"fi; " \
-		"else run netboot; fi;\0" \
+		"else " \
+			"echo WARN: No SATA Device installed; " \
+			"run mmcboot; " \
+		"fi;\0" \
+	"bootsata=run sataboot;\0" \
+	"bootq6=echo Booting Q6 Board ...; " \
+		"if sata init; then " \
+			"run sataboot; " \
+		"else " \
+			"mmc dev ${mmcdev};" \
+			"if mmc rescan; then " \
+				"run mmcboot; " \
+			"else echo WARN: Missing SATA and SD boot devices; " \
+			"fi; " \
+		"fi;\0" \
 	"netargs=setenv bootargs console=${console},${baudrate} " \
 		"root=/dev/nfs " \
 		"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp rootwait rw " \
@@ -384,14 +398,14 @@
 
 		
 #define CONFIG_BOOTCOMMAND \
-	"run bootmmc;"
+	"run bootq6;"
 
 #define CONFIG_ARP_TIMEOUT     200UL
 
 #define CONFIG_SYS_ALT_MEMTEST
 #define CONFIG_SYS_MEMTEST_START       0x10000000
-#define CONFIG_SYS_MEMTEST_END         0x17000000
-#define CONFIG_SYS_MEMTEST_SCRATCH     0x17100000
+#define CONFIG_SYS_MEMTEST_END         0xff540000
+#define CONFIG_SYS_MEMTEST_SCRATCH     0xff540010
 
 #define CONFIG_STACKSIZE               (128 * 1024)
 
